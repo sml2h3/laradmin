@@ -13,6 +13,7 @@ class LoginController extends Controller
     public function index(Request $request){
         $coo = Cookie::get('user_token');
         $coo2 = Cookie::get('sid');
+        $bool = False;
         if($coo == null && $coo2 == null){
             return redirect()->to('admin/login');
         }
@@ -21,7 +22,7 @@ class LoginController extends Controller
             if (isset($info->username) && isset($info->password)){
                 $result = Manager::where('username',$info->username)->first();
                 if(Crypt::decrypt($result->password) == $info->password){
-                    return $this->showindex($result);
+                    $bool = True;
                 }else{
                     return redirect()->to('admin/login');
                 }
@@ -29,19 +30,18 @@ class LoginController extends Controller
                 return redirect()->to('admin/login');
             }
         }
-        if($coo != null){
+        if($coo != null && $bool === False){
             $token = Crypt::decrypt($coo);
             $result = Manager::where('remtoken',$token)->first();
-            if($result){
-                return $this->showindex($result);
-            }else{
+            if(!$result){
                 return redirect()->to('admin/login');
             }
         }
+        return $this->showindex($result);
     }
 
     private function showindex($info){
-        return view('base');
+        return view('base',['activeMenu'=>'index']);
     }
 
     public function login(Request $request){

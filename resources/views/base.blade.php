@@ -254,21 +254,37 @@ desired effect
 
             <!-- Sidebar Menu -->
             <ul class="sidebar-menu">
-                <li class="header">HEADER</li>
+                <li class="header">菜单</li>
+                <li
+                        @if( isset($activeMenu) && $activeMenu == 'index' )
+                        class="active"
+                        @endif
+                ><a href="index"><i class="fa fa-link"></i> <span>控制台</span></a></li>
                 <!-- Optionally, you can add icons to the links -->
-                <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-                <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
-                        <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#">Link in level 2</a></li>
-                        <li><a href="#">Link in level 2</a></li>
-                    </ul>
-                </li>
+                @foreach( $menulist['parent'] as $l)
+                    @if( !isset($menulist['son'][$l->Id]) )
+                        <li @if( isset($activeMenu) && $activeMenu == $l->menuLink )
+                            class="active"
+                                @endif
+                        ><a href="{{ $l->menuLink }}"><i class="fa fa-link"></i> <span>{{ $l->menuName }}</span></a></li>
+                    @else
+                        <li class="treeview">
+                            <a href="#"><i class="fa fa-link"></i> <span>{{ $l->menuName }}</span>
+                                <span class="pull-right-container">
+                          <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                @foreach( $menulist['son'][$l->Id] as $l2)
+                                <li @if( isset($activeMenu) && $activeMenu == $l2->menuLink )
+                                    class="active"
+                                        @endif
+                                ><a href="{{ $l2->menuLink }}">{{ $l2->menuName }}</a></li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
+                @endforeach
             </ul>
             <!-- /.sidebar-menu -->
         </section>
@@ -389,7 +405,9 @@ desired effect
 <script src="{{ asset("/bower_components/AdminLTE/bootstrap/js/bootstrap.min.js")}}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset("/bower_components/AdminLTE/dist/js/app.min.js")}}"></script>
-
+<script>
+    $('.treeview-menu li.active').parent().parent().addClass('active')
+</script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the

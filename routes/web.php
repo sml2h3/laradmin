@@ -5,4 +5,8 @@ Route::group(['prefix' => 'admin'],function (){
         return view('login');
     });
     Route::post('login','Admin\LoginController@login');
+
+    Route::group(['middleware'=>'manager'],function(){
+        Route::get('fadd','Admin\FangController@fadd_page');
+    });
 });
